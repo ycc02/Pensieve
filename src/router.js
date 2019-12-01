@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const permissions = require('./middlewares/permissions');
+const isAuthenticated = permissions.isAuthenticated;
 
 const auth = require('./auth/main.js');
 const accountRouter = require('./account/main.js');
@@ -27,9 +29,14 @@ const generalRouter = require('./general/main.js');
 //routes do not protect by token, to fix this, we would have to tranmit img totally by axios api
 router.use('/img', imgRouter)
 
-//veirfy user status
+//verify user status
 router.use('/', auth)
 
+// doesn't need authenticated
+router.use('/units', unitsRouter)
+
+// need authenticated
+router.use('/', isAuthenticated)
 //only approach after verified
 router.use('/user', userRouter)
 router.use('/actions', actionsRouter) //prepare to replace part of the "/user"
@@ -37,7 +44,6 @@ router.use('/collaterals', collateralsRouter) //prepare to replace part of the "
 router.use('/scape', scapeRouter) //prepare to replace part of the "/user"
 
 
-router.use('/unit', unitRouter)
 // shift to "units"
 router.use('/units', unitsRouter)
 //all above are path since begining, with old deisgn
